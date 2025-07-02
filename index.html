@@ -28,25 +28,32 @@
     const output = document.getElementById('output');
     output.textContent = ''; // Clear previous output
 
-    // Array to collect decoded strings
     const decodedStrings = [];
 
-    // Override __inusc112 before running user script
+    // Override __inusc112 function
     window.__inusc112 = function(input) {
       const decoded = input.split(',').map(n => String.fromCharCode(+n)).join('');
       decodedStrings.push(decoded);
-      output.textContent = decodedStrings.join('\n');
+      console.log('Decoded:', decoded);
       return decoded;
     };
 
-    // Run user pasted script safely using new Function
     const userScript = document.getElementById('inputScript').value;
 
     try {
-      // Create a new function from the script and run it
-      new Function(userScript)();
+      // Wrap user script in a function so we can capture return value
+      const wrapped = new Function(userScript);
+      const result = wrapped();
+
+      output.textContent = 'Decoded Strings:\n' + decodedStrings.join('\n');
+
+      if (result !== undefined) {
+        output.textContent += '\n\nScript return value:\n' + result;
+        console.log('Script return value:', result);
+      }
     } catch (e) {
       output.textContent += `\n\n[Error running script]: ${e.message}`;
+      console.error(e);
     }
   });
 </script>
