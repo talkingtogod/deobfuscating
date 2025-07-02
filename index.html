@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Deobfuscator</title>
+  <script>
+    // Override the decoder before loading obfuscated script
+    window.__inusc112 = function(input) {
+      const result = input.split(',').map(n => String.fromCharCode(+n)).join('');
+      console.log('Decoded:', result);
+      // You can also collect these results into an array or show in-page
+      return result;
+    };
+  </script>
+  <script src="https://raw.githubusercontent.com/talkingtogod/repo/main/obfuscated.js" defer></script>
+</head>
+<body>
+  <h1>Deobfuscation running — check the console</h1>
+  <pre id="output"></pre>
+
+  <script>
+    // Optional: Capture decoded strings to show on page instead of console
+    const output = document.getElementById('output');
+    const decodedStrings = [];
+    const originalInusc112 = window.__inusc112;
+    window.__inusc112 = function(input) {
+      const res = originalInusc112(input);
+      decodedStrings.push(res);
+      output.textContent = decodedStrings.join('\n');
+      return res;
+    };
+  </script>
+</body>
+</html>
