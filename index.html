@@ -1,34 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Deobfuscator</title>
-  <script>
-    // Override the decoder before loading obfuscated script
-    window.__inusc112 = function(input) {
-      const result = input.split(',').map(n => String.fromCharCode(+n)).join('');
-      console.log('Decoded:', result);
-      // You can also collect these results into an array or show in-page
-      return result;
-    };
-  </script>
-  <script src="https://raw.githubusercontent.com/talkingtogod/deobfuscating/refs/heads/main/obfuscated.js" defer></script>
+<meta charset="UTF-8" />
+<title>Inusc Deobfuscator</title>
+<style>
+  body { font-family: sans-serif; max-width: 800px; margin: 2em auto; }
+  textarea, pre { width: 100%; box-sizing: border-box; font-family: monospace; font-size: 14px; }
+  textarea { height: 200px; }
+  button { margin: 1em 0; padding: 0.5em 1em; font-size: 16px; cursor: pointer; }
+  pre { background: #eee; padding: 1em; white-space: pre-wrap; min-height: 150px; }
+</style>
 </head>
 <body>
-  <h1>Deobfuscation running — check the console</h1>
-  <pre id="output"></pre>
 
-  <script>
-    // Optional: Capture decoded strings to show on page instead of console
+<h1>Inusc Deobfuscator</h1>
+
+<label for="inputScript">Paste obfuscated script here:</label>
+<textarea id="inputScript" placeholder="Paste your obfuscated JS here..."></textarea>
+
+<button id="runBtn">Deobfuscate & Run</button>
+
+<h2>Decoded Output:</h2>
+<pre id="output"></pre>
+
+<script>
+  document.getElementById('runBtn').addEventListener('click', () => {
     const output = document.getElementById('output');
+    output.textContent = ''; // Clear previous output
+
+    // Array to collect decoded strings
     const decodedStrings = [];
-    const originalInusc112 = window.__inusc112;
+
+    // Override __inusc112 before running user script
     window.__inusc112 = function(input) {
-      const res = originalInusc112(input);
-      decodedStrings.push(res);
+      const decoded = input.split(',').map(n => String.fromCharCode(+n)).join('');
+      decodedStrings.push(decoded);
       output.textContent = decodedStrings.join('\n');
-      return res;
+      return decoded;
     };
-  </script>
+
+    // Run user pasted script safely using new Function
+    const userScript = document.getElementById('inputScript').value;
+
+    try {
+      // Create a new function from the script and run it
+      new Function(userScript)();
+    } catch (e) {
+      output.textContent += `\n\n[Error running script]: ${e.message}`;
+    }
+  });
+</script>
+
 </body>
 </html>
